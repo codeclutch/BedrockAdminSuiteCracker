@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>License Key Generator - Dark Mode</title>
+    <title>License Key Generator - Version Selection</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -41,7 +41,7 @@
             font-weight: 600;
             font-size: 14px;
         }
-        input[type="text"] {
+        input[type="text"], select {
             width: 100%;
             padding: 12px;
             background-color: #121214;
@@ -53,8 +53,17 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        input[type="text"]:focus {
+        input[type="text"]:focus, select:focus {
             border-color: #00b37e;
+        }
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://w3.org' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a8a8b3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
         }
         button.generate-btn {
             width: 100%;
@@ -120,10 +129,20 @@
 
 <div class="container">
     <h2>Key Generator</h2>
+    
+    <div class="form-group">
+        <label for="versionSelect">Target Version</label>
+        <select id="versionSelect">
+            <option value="HERA_BKYR0BFP_1782784280109">Version 1.54</option>
+            <option value="HERA_SECURE_57728_2026">Version 1.46</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <label for="username">Username / Name</label>
-        <input type="text" id="username" placeholder="e.g. Notch" autocomplete="off">
+        <input type="text" id="username" placeholder="e.g. BlackoutCoder" autocomplete="off">
     </div>
+    
     <button class="generate-btn" onclick="handleGenerate()">Generate License Key</button>
 
     <div class="result-container" id="resultBox">
@@ -136,8 +155,8 @@
 </div>
 
 <script>
-function generateExpectedLicense(inputString) {
-  let baseString = inputString.toLowerCase().trim() + "HERA_BKYR0BFP_1782784280109";
+function generateExpectedLicense(inputString, salt) {
+  let baseString = inputString.toLowerCase().trim() + salt;
   let hash1 = 0x1505;
   let hash2 = 0xcde7;
   
@@ -169,6 +188,7 @@ function generateExpectedLicense(inputString) {
 
 function handleGenerate() {
     const inputVal = document.getElementById('username').value;
+    const selectedSalt = document.getElementById('versionSelect').value;
     const resultBox = document.getElementById('resultBox');
     const keyOutput = document.getElementById('keyOutput');
     const copyBtn = document.getElementById('copyBtn');
@@ -178,12 +198,10 @@ function handleGenerate() {
         return;
     }
     
-    const key = generateExpectedLicense(inputVal);
+    const key = generateExpectedLicense(inputVal, selectedSalt);
     keyOutput.innerText = key;
     
-    // Reset copy button status text if a new key is generated
     copyBtn.innerText = "Copy Key";
-    
     resultBox.style.display = 'block';
 }
 
