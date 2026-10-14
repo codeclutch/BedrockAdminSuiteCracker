@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Key Generator - Dark Mode</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121214;
+            color: #e1e1e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #202024;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #29292e;
+        }
+        h2 {
+            margin-top: 0;
+            color: #ffffff;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a8a8b3;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #121214;
+            border: 1px solid #29292e;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #00b37e;
+        }
+        button.generate-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #00b37e;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button.generate-btn:hover {
+            background-color: #00875f;
+        }
+        .result-container {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #121214;
+            border: 1px solid #29292e;
+            border-radius: 4px;
+            display: none;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .result-label {
+            font-size: 12px;
+            color: #a8a8b3;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .copy-btn {
+            background: none;
+            border: none;
+            color: #00b37e;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: rgba(0, 179, 126, 0.1);
+        }
+        .key-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 20px;
+            font-weight: bold;
+            color: #00b37e;
+            letter-spacing: 1px;
+            word-break: break-all;
+            padding-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Key Generator</h2>
+    <div class="form-group">
+        <label for="username">Username / Name</label>
+        <input type="text" id="username" placeholder="e.g. BlackoutCoder" autocomplete="off">
+    </div>
+    <button class="generate-btn" onclick="handleGenerate()">Generate License Key</button>
+
+    <div class="result-container" id="resultBox">
+        <div class="result-header">
+            <span class="result-label">Your License Key</span>
+            <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">Copy Key</button>
+        </div>
+        <div class="key-display" id="keyOutput"></div>
+    </div>
+</div>
+
+<script>
+function generateExpectedLicense(inputString) {
+  let baseString = inputString.toLowerCase().trim() + "HERA_BKYR0BFP_1782784280109";
+  let hash1 = 0x1505;
+  let hash2 = 0xcde7;
+  
+  for (let i = 0x0; i < baseString.length; i++) {
+    let charCode = baseString.charCodeAt(i);
+    hash1 = (hash1 << 0x5) + hash1 + charCode;
+    hash2 = ((hash2 << 0x5) + hash2) ^ charCode;
+  }
+  
+  hash1 = hash1 >>> 0x0;
+  hash2 = hash2 >>> 0x0;
+  
+  let hexString = ('00000000' + hash1.toString(0x10)).slice(-0x8) + ('00000000' + hash2.toString(0x10)).slice(-0x8);
+  hexString = hexString.toUpperCase();
+  
+  let serialBody = '';
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  
+  for (let i = 0x0; i < 0x10; i++) {
+    let hexValue = parseInt(hexString.charAt(i), 0x10) + i * 0x3 + baseString.length;
+    serialBody += alphabet.charAt(hexValue % alphabet.length);
+  }
+  
+  return serialBody.substring(0x0, 0x4) + '-' + 
+         serialBody.substring(0x4, 0x8) + '-' + 
+         serialBody.substring(0x8, 0xc) + '-' + 
+         serialBody.substring(0xc, 0x10);
+}
+
+function handleGenerate() {
+    const inputVal = document.getElementById('username').value;
+    const resultBox = document.getElementById('resultBox');
+    const keyOutput = document.getElementById('keyOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    
+    if (!inputVal.trim()) {
+        alert('Please enter a valid name!');
+        return;
+    }
+    
+    const key = generateExpectedLicense(inputVal);
+    keyOutput.innerText = key;
+    
+    // Reset copy button status text if a new key is generated
+    copyBtn.innerText = "Copy Key";
+    
+    resultBox.style.display = 'block';
+}
+
+function copyToClipboard() {
+    const keyText = document.getElementById('keyOutput').innerText;
+    const copyBtn = document.getElementById('copyBtn');
+    
+    if (!keyText) return;
+    
+    navigator.clipboard.writeText(keyText).then(() => {
+        copyBtn.innerText = "Copied!";
+        setTimeout(() => {
+            copyBtn.innerText = "Copy Key";
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
+}
+</script>
+
+</body>
+</html>
